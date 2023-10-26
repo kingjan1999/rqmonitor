@@ -1,5 +1,4 @@
 from flask import current_app, render_template, request, jsonify, url_for
-from six import string_types
 from flask import Blueprint
 from rqmonitor.utils import (
     list_all_queues_names,
@@ -51,15 +50,14 @@ def handle_invalid_usage(error):
     return response
 
 
-@monitor_blueprint.before_app_first_request
-def setup_redis_connection():
-    redis_url = current_app.config.get("RQ_MONITOR_REDIS_URL")
-    if isinstance(redis_url, string_types):
+def init_app(app):
+    redis_url = app.config.get("RQ_MONITOR_REDIS_URL")
+    if isinstance(redis_url, str):
         # update as tuple
-        current_app.config["RQ_MONITOR_REDIS_URL"] = (redis_url,)
-        current_app.redis_connection = create_redis_connection((redis_url,)[0])
+        app.config["RQ_MONITOR_REDIS_URL"] = (redis_url,)
+        app.redis_connection = create_redis_connection((redis_url,)[0])
     elif isinstance(redis_url, (tuple, list)):
-        current_app.redis_connection = create_redis_connection(redis_url[0])
+        app.redis_connection = create_redis_connection(redis_url[0])
     else:
         raise RuntimeError("No Redis configuration!")
 

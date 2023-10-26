@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.10-slim
 
 MAINTAINER Pranav Gupta "pranavgupta4321@gmail.com"
 

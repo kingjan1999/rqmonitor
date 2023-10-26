@@ -19,7 +19,7 @@ from flask import Flask, Response, request
 
 from rqmonitor.defaults import RQ_MONITOR_REDIS_URL, RQ_MONITOR_REFRESH_INTERVAL
 from rqmonitor.version import VERSION
-from rqmonitor.bp import monitor_blueprint
+from rqmonitor.bp import monitor_blueprint, init_app as init_app_bp
 
 
 logger = logging.getLogger("werkzeug")
@@ -64,7 +64,7 @@ def create_app_with_blueprint(
     # Optionally add basic auth to blueprint and register with app.
     if username:
         add_basic_auth(blueprint, username, password)
-
+    
     app.register_blueprint(blueprint, url_prefix=url_prefix)
 
     return app
@@ -266,6 +266,7 @@ def run(
     )
     app.config["RQ_MONITOR_REDIS_URL"] = redis_url
     app.config["RQ_MONITOR_REFRESH_INTERVAL"] = refresh_interval
+    init_app_bp(app)
 
     # Conditionally disable Flask console messages
     # See: https://stackoverflow.com/questions/14888799
